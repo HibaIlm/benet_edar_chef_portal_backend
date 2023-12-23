@@ -151,6 +151,41 @@ def api_post_dish():
 
     return json.dumps({'status': 200, 'message': '', 'data': response.data[0] if response.data else []})
 
+@app.route('/cook.register', methods=['POST', 'GET'])
+def api_register_cook():
+    UserID = request.form.get('UserID')
+    CookName = request.form.get('CookName')
+    Bio = request.form.get('Bio')
+    Profile_pic = request.form.get('Profile_pic')
+    error = None
+
+    if (not CookName) or (len(CookName) == 0):
+        error = 'Name cannot be empty'
+        
+    if (not UserID) or (len(UserID) == 0):
+        error = 'User ID cannot be empty'
+
+    if error:
+        return json.dumps({'status': 500, 'message': error})
+
+    response = supabase.table('Cook').insert({
+        "Cook_Name": CookName,
+        'User_ID': UserID,
+        'Profile_Pic': Profile_pic,
+        'Bio': Bio,
+
+    }).execute()
+
+    print(str(response.data))
+
+    if len(response.data) == 0:
+        error = 'Error '
+
+    if error:
+        return json.dumps({'status': 500, 'message': error})
+
+    return json.dumps({'status': 200, 'message': '', 'data': response.data[0] if response.data else []})
+
                
 @app.route('/')
 def about():
